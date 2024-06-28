@@ -25,10 +25,12 @@ class ChatMessageHandler : CommandHandler {
 
     public void ChatDisabled(Client client) {
         client.Send(Utils.BuildServerSideMessage("Unfortunately, chat has been disabled by server administrators", "Server"));
+        client.Send(Utils.ArrNetworkPacket(new string[] { "SMM", "-1", "CHAT_DISABLED", "Chat is currently disabled. Try Again Later!", "1" }, "SMM"));
     }
 
     public void ClientMuted(Client client) {
         client.Send(Utils.BuildServerSideMessage("You have been muted by the moderators", "Server"));
+        client.Send(Utils.ArrNetworkPacket(new string[] { "SMM", "-1", "TEMP_MUTE", "You Are Currently Muted. This Means You Cannot Chat Until You Are Unmuted By A Moderator.", "1" }, "SMM"));
     }
 
     public void Chat(Client client, string message) {

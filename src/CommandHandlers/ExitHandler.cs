@@ -8,6 +8,7 @@ namespace sodoffmmo.CommandHandlers;
 class ExitHandler : CommandHandler {
     public override Task Handle(Client client, NetworkObject receivedObject) {
         client.SetRoom(null);
+
         return Task.CompletedTask;
     }
 }

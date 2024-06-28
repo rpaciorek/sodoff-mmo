@@ -58,6 +58,37 @@ public class Server {
             try {
                 client.SetRoom(null);
             } catch (Exception) { }
+
+            // set user as offline and blank out current location
+            HttpClient httpClient = new();
+            var onlineSetRequest = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                { "token", client.PlayerData.UNToken },
+                { "online", "false" }
+            });
+            var locationSetRequest = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                { "token", client.PlayerData.UNToken },
+                { "location", string.Empty }
+            });
+
+            var onlineSetResponse = httpClient.PostAsync($"{Configuration.ServerConfiguration.ApiUrl}/MMO/SetBuddyOnline", onlineSetRequest).Result;
+            string? onlineResString = onlineSetResponse.Content.ReadAsStringAsync().Result;
+            var locationSetResponse = httpClient.PostAsync($"{Configuration.ServerConfiguration.ApiUrl}/MMO/SetBuddyLocation", locationSetRequest).Result;
+
+            if (onlineSetResponse.StatusCode == HttpStatusCode.OK && onlineResString != null)
+            {
+                Console.WriteLine($"User {client.PlayerData.DiplayName} Is Now Offline");
+                if(locationSetResponse.StatusCode == HttpStatusCode.OK)
+                {
+                    Console.WriteLine($"User {client.PlayerData.DiplayName}'s Location Is Now Empty");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Was Unable To Set {client.PlayerData.DiplayName} As Offline");
+            }
+
             client.Disconnect();
             Console.WriteLine("Socket disconnected IID: " + client.ClientID);
         }
