@@ -98,6 +98,31 @@ class LoginHandler : CommandHandler
             if (info.Authenticated) {
                 client.PlayerData.DiplayName = info.DisplayName;
                 client.PlayerData.Role = info.Role;
+
+                // set user as online api side
+                var onlineSetRequest = new FormUrlEncodedContent(
+                new Dictionary<string, string> {
+                    { "token", client.PlayerData.UNToken },
+                    { "online", "true" }
+                });
+
+                HttpResponseMessage? onlineSetResponse = null;
+                string? onlineResString = null;
+
+                if (Configuration.ServerConfiguration.Authentication == AuthenticationMode.Required && Configuration.ServerConfiguration.ApiUrl != null)
+                    onlineSetResponse = httpClient.PostAsync($"{Configuration.ServerConfiguration.ApiUrl}/MMO/SetBuddyOnline", onlineSetRequest).Result;
+                
+                if (onlineSetResponse != null)
+                    onlineResString = onlineSetResponse.Content.ReadAsStringAsync().Result;
+
+                if (onlineSetResponse.StatusCode == System.Net.HttpStatusCode.OK && onlineResString != null)
+                {
+                    Console.WriteLine($"User {client.PlayerData.DiplayName} Is Now Online");
+                } else
+                {
+                    Console.WriteLine($"Was Unable To Set {client.PlayerData.DiplayName} As Online");
+                }
+
                 return true;
             }
         } catch (Exception ex) {
