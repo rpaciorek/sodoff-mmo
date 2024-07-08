@@ -1,4 +1,5 @@
-﻿using sodoffmmo.Core;
+﻿using sodoffmmo.API;
+using sodoffmmo.Core;
 using sodoffmmo.Data;
 using sodoffmmo.Management;
 using System;
@@ -12,6 +13,8 @@ public class Server {
     readonly IPAddress ipAddress;
     readonly bool IPv6AndIPv4;
     ModuleManager moduleManager = new();
+
+    public static List<Client> AllClients { get; set; } = new();
 
     public Server(IPAddress ipAdress, int port, bool IPv6AndIPv4) {
         this.ipAddress = ipAdress;
@@ -29,7 +32,22 @@ public class Server {
             listener.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, 0);
         listener.Bind(new IPEndPoint(ipAddress, port));
         new RoomWithAlert("LoungeInt"); // FIXME use config for this
+        var apiBuilder = CreateApiBuilder().Build();
+        await apiBuilder.StartAsync(); // start minimal api for api side updates and events
         await Listen(listener);
+
+        // when listener exits, stop and dispose api
+        await apiBuilder.StopAsync();
+        apiBuilder.Dispose();
+    }
+
+    public static IHostBuilder CreateApiBuilder()
+    {
+        return Host.CreateDefaultBuilder().ConfigureWebHostDefaults(webHost =>
+        {
+            webHost.UseUrls("http://*:9935");
+            webHost.UseStartup<ApiStartup>();
+        });
     }
 
     private async Task Listen(Socket listener) {
@@ -45,6 +63,7 @@ public class Server {
 
     private async Task HandleClient(Socket handler) {
         Client client = new(handler);
+        AllClients.Add(client);
         try {
             while (client.Connected) {
                 await client.Receive();
@@ -57,6 +76,7 @@ public class Server {
         } finally {
             try {
                 client.SetRoom(null);
+                AllClients.Remove(client);
             } catch (Exception) { }
 
             // set user as offline and blank out current location
@@ -69,7 +89,8 @@ public class Server {
             var locationSetRequest = new FormUrlEncodedContent(new Dictionary<string, string>
             {
                 { "token", client.PlayerData.UNToken },
-                { "location", string.Empty }
+                { "roomId", string.Empty },
+                { "roomName", string.Empty }
             });
 
             var onlineSetResponse = httpClient.PostAsync($"{Configuration.ServerConfiguration.ApiUrl}/MMO/SetBuddyOnline", onlineSetRequest).Result;
