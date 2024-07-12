@@ -48,7 +48,7 @@ public class Server {
     {
         return Host.CreateDefaultBuilder().ConfigureWebHostDefaults(webHost =>
         {
-            webHost.UseUrls("http://*:9935");
+            webHost.UseUrls($"http://*:{Configuration.ServerConfiguration.HttpApiPort}");
             webHost.UseStartup<ApiStartup>();
         });
     }
