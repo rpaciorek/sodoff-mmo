@@ -34,7 +34,7 @@ class SendMessageBoardHandler : CommandHandler
         });
 
         HttpResponseMessage? postMsgResponse = null;
-        if (Configuration.ServerConfiguration.Authentication == AuthenticationMode.Required && Configuration.ServerConfiguration.ApiUrl != null)
+        if (!String.IsNullOrEmpty(Configuration.ServerConfiguration.ApiUrl))
             postMsgResponse = httpClient.PostAsync($"{Configuration.ServerConfiguration.ApiUrl}/MMO/SendMessage", postMsgRequest).Result;
 
         if(postMsgResponse != null && postMsgResponse.StatusCode == System.Net.HttpStatusCode.OK)

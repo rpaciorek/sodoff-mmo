@@ -31,6 +31,10 @@ public class Server {
         if (IPv6AndIPv4)
             listener.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, 0);
         listener.Bind(new IPEndPoint(ipAddress, port));
+        Room.GetOrAdd("LoungeInt").AddAlert(new Room.AlertInfo("3")); // FIXME use config for this
+        Room.GetOrAdd("Spaceport").AddAlert(new Room.AlertInfo("1", 20.0, 300, 300));
+        Room.GetOrAdd("Spaceport").AddAlert(new Room.AlertInfo("2", 120.0, 1800, 3600));
+        Room.GetOrAdd("Academy").AddAlert(new Room.AlertInfo("1", 20.0, 300, 300));
         new RoomWithAlert("LoungeInt"); // FIXME use config for this
         var apiBuilder = CreateApiBuilder().Build();
         await apiBuilder.StartAsync(); // start minimal api for api side updates and events
