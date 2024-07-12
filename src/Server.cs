@@ -35,7 +35,6 @@ public class Server {
         Room.GetOrAdd("Spaceport").AddAlert(new Room.AlertInfo("1", 20.0, 300, 300));
         Room.GetOrAdd("Spaceport").AddAlert(new Room.AlertInfo("2", 120.0, 1800, 3600));
         Room.GetOrAdd("Academy").AddAlert(new Room.AlertInfo("1", 20.0, 300, 300));
-        new RoomWithAlert("LoungeInt"); // FIXME use config for this
         var apiBuilder = CreateApiBuilder().Build();
         await apiBuilder.StartAsync(); // start minimal api for api side updates and events
         await Listen(listener);
