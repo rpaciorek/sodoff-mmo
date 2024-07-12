@@ -34,8 +34,8 @@ namespace sodoffmmo.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetCombinedNumberOfUsersOnline")]
-        public IActionResult GetCombinedNumberOfUsersOnline()
+        [Route("GetCombinedNumberOfPlayersOnline")]
+        public IActionResult GetCombinedNumberOfPlayersOnline()
         {
             return Ok(Server.AllClients.Count);
         }

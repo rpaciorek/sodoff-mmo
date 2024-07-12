@@ -90,7 +90,8 @@ public class Server {
             {
                 { "token", client.PlayerData.UNToken },
                 { "roomId", string.Empty },
-                { "roomName", string.Empty }
+                { "roomName", string.Empty },
+                { "isPrivate", "False" }
             });
 
             var onlineSetResponse = httpClient.PostAsync($"{Configuration.ServerConfiguration.ApiUrl}/MMO/SetBuddyOnline", onlineSetRequest).Result;

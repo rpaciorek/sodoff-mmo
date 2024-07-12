@@ -50,9 +50,6 @@ class SendMessageReplyHandler : CommandHandler
             client.Send(Utils.ArrNetworkPacket(new string[] { "SMF" }, "SMF"));
         }
 
-        // refresh all users in room message queue
-        if (client.Room is not null) client.Room.Send(Utils.ArrNetworkPacket(new string[] { "SPMN" }, "SPMN"));
-
         return Task.CompletedTask;
     }
 }

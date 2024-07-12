@@ -1,6 +1,7 @@
 using sodoffmmo.Attributes;
 using sodoffmmo.Core;
 using sodoffmmo.Data;
+using System.Text.Json;
 
 namespace sodoffmmo.CommandHandlers;
 
@@ -25,6 +26,7 @@ class JoinRoomHandler : CommandHandler
             { "token", client.PlayerData.UNToken },
             { "roomId", client.Room.Id.ToString() },
             { "roomName", client.Room.Name.ToString() },
+            { "isPrivate", "False" }
         });
         HttpResponseMessage? locationSetResponse = null;
         if (Configuration.ServerConfiguration.Authentication == AuthenticationMode.Required && Configuration.ServerConfiguration.ApiUrl != null)
@@ -34,9 +36,6 @@ class JoinRoomHandler : CommandHandler
         {
             Console.WriteLine($"User {client.PlayerData.DiplayName}'s Location Is Now Set");
         }
-
-        // send message queue refresh
-        client.Room.Send(Utils.ArrNetworkPacket(new string[] { "SPMN" }, "SPMN"));
 
         return Task.CompletedTask;
     }
